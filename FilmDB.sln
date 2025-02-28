@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmDB.DAL", "FilmDB.DAL\FilmDB.DAL.csproj", "{A1B2C3D4-E5F6-4747-8899-0123456789AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmDB.API", "FilmDB.API\FilmDB.API.csproj", "{01D7BD02-FAFE-4330-A907-AA7D55743D37}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1B2C3D4-E5F6-4747-8899-0123456789AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-4747-8899-0123456789AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-4747-8899-0123456789AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-4747-8899-0123456789AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01D7BD02-FAFE-4330-A907-AA7D55743D37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01D7BD02-FAFE-4330-A907-AA7D55743D37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01D7BD02-FAFE-4330-A907-AA7D55743D37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01D7BD02-FAFE-4330-A907-AA7D55743D37}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {91CF3176-68E3-4057-A426-3C64A0D9FA0A}
+	EndGlobalSection
+EndGlobal
