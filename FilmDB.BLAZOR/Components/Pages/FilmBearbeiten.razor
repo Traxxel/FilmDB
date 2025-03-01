@@ -1,0 +1,186 @@
+@page "/film-bearbeiten/{Id:int}"
+@using FilmDB.BLAZOR.Models
+@using FilmDB.BLAZOR.Services
+@inject FilmDBService FilmDBService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Film bearbeiten</PageTitle>
+
+<style>
+    .rating {
+        display: inline-flex;
+        flex-direction: row-reverse;
+        gap: 0.3rem;
+    }
+
+    .rating .star {
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #ccc;
+        transition: color 0.2s ease;
+    }
+
+    .rating .star.active,
+    .rating .star:hover,
+    .rating .star:hover ~ .star {
+        color: #ffc107;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Film bearbeiten</h5>
+            </div>
+            <div class="card-body">
+                @if (film == null)
+                {
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Laden...</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="@film" OnValidSubmit="@HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="titel" class="form-label">Titel</label>
+                                    <InputText id="titel" class="form-control" @bind-Value="film.Titel" placeholder="Filmtitel eingeben..." />
+                                    <ValidationMessage For="@(() => film.Titel)" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="gesehenAm" class="form-label">Gesehen am</label>
+                                    <InputDate id="gesehenAm" class="form-control" @bind-Value="film.GesehenAm" />
+                                    <ValidationMessage For="@(() => film.GesehenAm)" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Bewertung</label>
+                                    <div class="rating">
+                                        @for (int i = 5; i >= 1; i--)
+                                        {
+                                            var rating = i;
+                                            <i class="bi bi-star-fill star @(rating <= film.Bewertung ? "active" : "")"
+                                               @onclick="() => SetRating(rating)"
+                                               @onmouseover="() => HoverRating = rating"
+                                               @onmouseout="() => HoverRating = 0"></i>
+                                        }
+                                    </div>
+                                    <ValidationMessage For="@(() => film.Bewertung)" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="sender" class="form-label">Sender</label>
+                                    <InputSelect id="sender" class="form-control" @bind-Value="film.GesehenBeiID">
+                                        <option value="">-- Sender auswählen --</option>
+                                        @if (sender != null)
+                                        {
+                                            @foreach (var s in sender.OrderBy(s => s.Sendername))
+                                            {
+                                                <option value="@s.ID">@s.Sendername</option>
+                                            }
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => film.GesehenBeiID)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="kommentar" class="form-label">Kommentar</label>
+                                    <InputTextArea id="kommentar" class="form-control" @bind-Value="film.Kommentar" rows="3" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-outline-secondary me-2" @onclick="NavigateBack">
+                                    <i class="bi bi-x-circle me-2"></i>Abbrechen
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>Änderungen speichern
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private GesehenModel? film;
+    private List<SenderModel>? sender;
+    private int HoverRating { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            sender = await FilmDBService.GetSenderAsync();
+            film = (await FilmDBService.GetGesehenAsync())?.FirstOrDefault(f => f.ID == Id);
+            
+            if (film == null)
+            {
+                NavigateBack();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Laden: {ex.Message}");
+            NavigateBack();
+        }
+    }
+
+    private void SetRating(int rating)
+    {
+        if (film != null)
+        {
+            film.Bewertung = rating;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (film != null)
+            {
+                await FilmDBService.UpdateGesehenAsync(film);
+                NavigateBack();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
+        }
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("gesehen");
+    }
+} 

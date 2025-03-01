@@ -2,6 +2,7 @@
 @using FilmDB.BLAZOR.Models
 @using FilmDB.BLAZOR.Services
 @inject FilmDBService FilmDBService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Gesehene Filme</PageTitle>
 
@@ -62,10 +63,10 @@
                                         <td>@(film.GesehenBei?.Sendername ?? "-")</td>
                                         <td>@(film.Kommentar ?? "-")</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten">
+                                            <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten" @onclick="@(() => EditFilm(film))">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" title="Löschen">
+                                            <button class="btn btn-sm btn-outline-danger" title="Löschen" @onclick="@(() => DeleteFilm(film))">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
@@ -91,5 +92,30 @@
     private async Task LoadData()
     {
         filme = await FilmDBService.GetGesehenAsync();
+    }
+
+    private void EditFilm(GesehenModel film)
+    {
+        // TODO: Implementiere die Bearbeiten-Funktion
+        // Für jetzt navigieren wir zur Bearbeiten-Seite
+        NavigationManager.NavigateTo($"film-bearbeiten/{film.ID}");
+    }
+
+    private async Task DeleteFilm(GesehenModel film)
+    {
+        try
+        {
+            await FilmDBService.DeleteGesehenAsync(film.ID);
+            if (filme != null)
+            {
+                filme.Remove(film);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Löschen: {ex.Message}");
+            await LoadData(); // Bei Fehler komplette Liste neu laden
+        }
     }
 } 
