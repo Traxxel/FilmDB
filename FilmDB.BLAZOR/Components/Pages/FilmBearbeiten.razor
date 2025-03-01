@@ -108,7 +108,7 @@
 
                         <div class="row mt-4">
                             <div class="col-12 text-end">
-                                <button type="button" class="btn btn-outline-secondary me-2" @onclick="NavigateBack">
+                                <button type="button" @onclick="CancelEdit" class="btn btn-outline-secondary me-2">
                                     <i class="bi bi-x-circle me-2"></i>Abbrechen
                                 </button>
                                 <button type="submit" class="btn btn-primary">
@@ -145,13 +145,13 @@
             
             if (film == null)
             {
-                NavigateBack();
+                GoToGesehenPage();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Fehler beim Laden: {ex.Message}");
-            NavigateBack();
+            GoToGesehenPage();
         }
     }
 
@@ -169,18 +169,42 @@
         {
             if (film != null)
             {
-                await FilmDBService.UpdateGesehenAsync(film);
-                NavigateBack();
+                Console.WriteLine($"Versuche Film zu speichern: ID={film.ID}, Titel={film.Titel}");
+                var updatedFilm = await FilmDBService.UpdateGesehenAsync(film);
+                Console.WriteLine("Film erfolgreich gespeichert");
+                await Task.Delay(500); // Kurze Verzögerung für die Datenbankaktualisierung
+                GoToGesehenPage();
+            }
+            else
+            {
+                Console.WriteLine("Fehler: Film ist null");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
+            Console.WriteLine($"StackTrace: {ex.StackTrace}");
+            
+            // Versuche trotzdem zur Übersicht zurückzukehren
+            await Task.Delay(1000);
+            GoToGesehenPage();
         }
     }
 
-    private void NavigateBack()
+    private void CancelEdit()
     {
-        NavigationManager.NavigateTo("gesehen");
+        GoToGesehenPage();
+    }
+
+    private void GoToGesehenPage()
+    {
+        try
+        {
+            NavigationManager.NavigateTo("gesehen", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler bei der Navigation: {ex.Message}");
+        }
     }
 } 

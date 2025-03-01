@@ -54,9 +54,34 @@ namespace FilmDB.BLAZOR.Services
 
         public async Task<GesehenModel> UpdateGesehenAsync(GesehenModel gesehen)
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/gesehen/{gesehen.ID}", gesehen);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<GesehenModel>() ?? throw new Exception("Fehler beim Aktualisieren des Gesehen-Eintrags");
+            try
+            {
+                Console.WriteLine($"Sende Update-Anfrage für Film: ID={gesehen.ID}");
+                var response = await _httpClient.PutAsJsonAsync($"api/gesehen/{gesehen.ID}", gesehen);
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Server-Fehler: {response.StatusCode}, Content: {errorContent}");
+                    throw new Exception($"Server-Fehler: {response.StatusCode}");
+                }
+
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<GesehenModel>();
+                
+                if (result == null)
+                {
+                    throw new Exception("Keine Daten vom Server erhalten");
+                }
+                
+                Console.WriteLine("Update erfolgreich durchgeführt");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler in UpdateGesehenAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task DeleteGesehenAsync(int id)
