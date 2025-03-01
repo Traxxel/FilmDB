@@ -2,87 +2,96 @@
 @using FilmDB.BLAZOR.Models
 @using FilmDB.BLAZOR.Services
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @inject FilmDBService FilmDBService
 @inject NavigationManager NavigationManager
 
-@attribute [Authorize]
-
 <PageTitle>Gesehene Filme</PageTitle>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Gesehene Filme</h5>
-                <a href="film-hinzufuegen" class="btn btn-light">
-                    <i class="bi bi-plus-circle me-2"></i>Neuen Film erfassen
-                </a>
-            </div>
-            <div class="card-body">
-                @if (filme == null)
-                {
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Laden...</span>
+<CascadingAuthenticationState>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Gesehene Filme</h5>
+                    <AuthorizeView>
+                        <Authorized>
+                            <button class="btn btn-primary" @onclick="AddFilm">
+                                <i class="bi bi-plus-circle me-2"></i>Neuen Film erfassen
+                            </button>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+                <div class="card-body">
+                    @if (filme == null)
+                    {
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Laden...</span>
+                            </div>
                         </div>
-                    </div>
-                }
-                else if (!filme.Any())
-                {
-                    <div class="alert alert-info" role="alert">
-                        <i class="bi bi-info-circle me-2"></i>Keine Filme vorhanden.
-                    </div>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Titel</th>
-                                    <th>Gesehen am</th>
-                                    <th>Bewertung</th>
-                                    <th>Sender</th>
-                                    <th>Kommentar</th>
-                                    <th class="text-end">Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var film in filme.OrderByDescending(f => f.GesehenAm))
-                                {
+                    }
+                    else if (!filme.Any())
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>Keine Filme vorhanden.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
                                     <tr>
-                                        <td>@film.Titel</td>
-                                        <td>@film.GesehenAm.ToShortDateString()</td>
-                                        <td>
-                                            @for (int i = 0; i < film.Bewertung; i++)
-                                            {
-                                                <i class="bi bi-star-fill text-warning"></i>
-                                            }
-                                            @for (int i = film.Bewertung; i < 5; i++)
-                                            {
-                                                <i class="bi bi-star text-muted"></i>
-                                            }
-                                        </td>
-                                        <td>@(film.GesehenBei?.Sendername ?? "-")</td>
-                                        <td>@(film.Kommentar ?? "-")</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten" @onclick="@(() => EditFilm(film))">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" title="Löschen" @onclick="@(() => DeleteFilm(film))">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
+                                        <th>Titel</th>
+                                        <th>Gesehen am</th>
+                                        <th>Bewertung</th>
+                                        <th>Sender</th>
+                                        <th>Kommentar</th>
+                                        <th class="text-end">Aktionen</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var film in filme.OrderByDescending(f => f.GesehenAm))
+                                    {
+                                        <tr>
+                                            <td>@film.Titel</td>
+                                            <td>@film.GesehenAm.ToShortDateString()</td>
+                                            <td>
+                                                @for (int i = 0; i < film.Bewertung; i++)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                @for (int i = film.Bewertung; i < 5; i++)
+                                                {
+                                                    <i class="bi bi-star text-muted"></i>
+                                                }
+                                            </td>
+                                            <td>@(film.GesehenBei?.Sendername ?? "-")</td>
+                                            <td>@(film.Kommentar ?? "-")</td>
+                                            <td class="text-end">
+                                                <AuthorizeView>
+                                                    <Authorized>
+                                                        <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten" @onclick="@(() => EditFilm(film))">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-danger" title="Löschen" @onclick="@(() => DeleteFilm(film))">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </Authorized>
+                                                </AuthorizeView>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
-</div>
+</CascadingAuthenticationState>
 
 @code {
     private List<GesehenModel>? filme;
@@ -120,5 +129,12 @@
             Console.WriteLine($"Fehler beim Löschen: {ex.Message}");
             await LoadData(); // Bei Fehler komplette Liste neu laden
         }
+    }
+
+    private void AddFilm()
+    {
+        // TODO: Implementiere die AddFilm-Funktion
+        // Für jetzt navigieren wir zur AddFilm-Seite
+        NavigationManager.NavigateTo("film-hinzufuegen");
     }
 } 

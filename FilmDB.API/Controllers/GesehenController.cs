@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FilmDB.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class GesehenController : ControllerBase
@@ -19,12 +18,14 @@ namespace FilmDB.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Gesehen>>> GetGesehen()
         {
             return await _context.Gesehen.Include(g => g.GesehenBei).ToListAsync();
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Gesehen>> GetGesehen(int id)
         {
             var gesehen = await _context.Gesehen
@@ -40,6 +41,7 @@ namespace FilmDB.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Gesehen>> PostGesehen(Gesehen gesehen)
         {
             _context.Gesehen.Add(gesehen);
@@ -49,6 +51,7 @@ namespace FilmDB.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutGesehen(int id, Gesehen gesehen)
         {
             if (id != gesehen.ID)
@@ -78,6 +81,7 @@ namespace FilmDB.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteGesehen(int id)
         {
             var gesehen = await _context.Gesehen.FindAsync(id);

@@ -94,11 +94,14 @@ namespace FilmDB.BLAZOR.Services
         {
             try 
             {
-                return await _httpClient.GetFromJsonAsync<List<GesehenModel>>("api/gesehen") ?? new List<GesehenModel>();
+                // Für GET-Anfragen keine Authentifizierung erforderlich
+                var httpClient = new HttpClient();
+                httpClient.BaseAddress = _httpClient.BaseAddress;
+                return await httpClient.GetFromJsonAsync<List<GesehenModel>>("api/gesehen") ?? new List<GesehenModel>();
             }
-            catch (AccessTokenNotAvailableException exception)
+            catch (Exception ex)
             {
-                exception.Redirect();
+                Console.WriteLine($"Fehler beim Abrufen der Filme: {ex.Message}");
                 return new List<GesehenModel>();
             }
         }
