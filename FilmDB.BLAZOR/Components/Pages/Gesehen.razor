@@ -48,7 +48,11 @@
                                         <th>Bewertung</th>
                                         <th>Sender</th>
                                         <th>Kommentar</th>
-                                        <th class="text-end">Aktionen</th>
+                                        <AuthorizeView>
+                                            <Authorized>
+                                                <th class="text-end">Aktionen</th>
+                                            </Authorized>
+                                        </AuthorizeView>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -69,18 +73,18 @@
                                             </td>
                                             <td>@(film.GesehenBei?.Sendername ?? "-")</td>
                                             <td>@(film.Kommentar ?? "-")</td>
-                                            <td class="text-end">
-                                                <AuthorizeView>
-                                                    <Authorized>
+                                            <AuthorizeView>
+                                                <Authorized>
+                                                    <td class="text-end">
                                                         <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten" @onclick="@(() => EditFilm(film))">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                         <button class="btn btn-sm btn-outline-danger" title="Löschen" @onclick="@(() => DeleteFilm(film))">
                                                             <i class="bi bi-trash"></i>
                                                         </button>
-                                                    </Authorized>
-                                                </AuthorizeView>
-                                            </td>
+                                                    </td>
+                                                </Authorized>
+                                            </AuthorizeView>
                                         </tr>
                                     }
                                 </tbody>
