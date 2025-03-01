@@ -2,6 +2,7 @@
 @using FilmDB.BLAZOR.Models
 @using FilmDB.BLAZOR.Services
 @using Microsoft.AspNetCore.Authorization
+@using DevExpress.Blazor
 @inject FilmDBService FilmDBService
 @inject NavigationManager NavigationManager
 
@@ -30,35 +31,43 @@
     }
 </style>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">Neuen Film erfassen</h5>
-            </div>
-            <div class="card-body">
-                <EditForm Model="@neuerFilm" OnValidSubmit="@HandleValidSubmit">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
+<DxCard>
+    <DxCardHeader>
+        <h5 class="mb-0">Neuen Film erfassen</h5>
+    </DxCardHeader>
+    <DxCardBody>
+        <EditForm Model="@neuerFilm" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="titel" class="form-label">Titel</label>
-                                <InputText id="titel" class="form-control" @bind-Value="neuerFilm.Titel" placeholder="Filmtitel eingeben..." />
+            <div class="row">
+                <div class="col-md-6">
+                    <DxFormLayout>
+                        <DxFormLayoutItem Caption="Titel" ColSpanMd="12">
+                            <Template Context="formLayoutContext">
+                                <DxTextBox @bind-Text="@neuerFilm.Titel"
+                                         ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                         NullText="Filmtitel eingeben..." />
                                 <ValidationMessage For="@(() => neuerFilm.Titel)" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label for="gesehenAm" class="form-label">Gesehen am</label>
-                                <InputDate id="gesehenAm" class="form-control" @bind-Value="neuerFilm.GesehenAm" />
+                            </Template>
+                        </DxFormLayoutItem>
+                    </DxFormLayout>
+                </div>
+                <div class="col-md-3">
+                    <DxFormLayout>
+                        <DxFormLayoutItem Caption="Gesehen am" ColSpanMd="12">
+                            <Template Context="formLayoutContext">
+                                <DxDateEdit @bind-Date="@neuerFilm.GesehenAm"
+                                          DisplayFormat="dd.MM.yyyy" />
                                 <ValidationMessage For="@(() => neuerFilm.GesehenAm)" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                                <label class="form-label">Bewertung</label>
+                            </Template>
+                        </DxFormLayoutItem>
+                    </DxFormLayout>
+                </div>
+                <div class="col-md-3">
+                    <DxFormLayout>
+                        <DxFormLayoutItem Caption="Bewertung" ColSpanMd="12">
+                            <Template Context="formLayoutContext">
                                 <div class="rating">
                                     @for (int i = 5; i >= 1; i--)
                                     {
@@ -70,47 +79,53 @@
                                     }
                                 </div>
                                 <ValidationMessage For="@(() => neuerFilm.Bewertung)" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="sender" class="form-label">Sender</label>
-                                <InputSelect id="sender" class="form-control" @bind-Value="neuerFilm.GesehenBeiID">
-                                    <option value="">-- Sender auswählen --</option>
-                                    @if (sender != null)
-                                    {
-                                        @foreach (var s in sender.OrderBy(s => s.Sendername))
-                                        {
-                                            <option value="@s.ID">@s.Sendername</option>
-                                        }
-                                    }
-                                </InputSelect>
-                                <ValidationMessage For="@(() => neuerFilm.GesehenBeiID)" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="kommentar" class="form-label">Kommentar</label>
-                                <InputTextArea id="kommentar" class="form-control" @bind-Value="neuerFilm.Kommentar" rows="3" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i>Film hinzufügen
-                            </button>
-                        </div>
-                    </div>
-                </EditForm>
+                            </Template>
+                        </DxFormLayoutItem>
+                    </DxFormLayout>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <DxFormLayout>
+                        <DxFormLayoutItem Caption="Sender" ColSpanMd="12">
+                            <Template Context="formLayoutContext">
+                                <DxComboBox Data="@sender"
+                                          @bind-Value="@neuerFilm.GesehenBeiID"
+                                          TextFieldName="@nameof(SenderModel.Sendername)"
+                                          ValueFieldName="@nameof(SenderModel.ID)"
+                                          NullText="-- Sender auswählen --"
+                                          ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+                                <ValidationMessage For="@(() => neuerFilm.GesehenBeiID)" />
+                            </Template>
+                        </DxFormLayoutItem>
+                    </DxFormLayout>
+                </div>
+                <div class="col-md-6">
+                    <DxFormLayout>
+                        <DxFormLayoutItem Caption="Kommentar" ColSpanMd="12">
+                            <Template Context="formLayoutContext">
+                                <DxMemo @bind-Text="@neuerFilm.Kommentar"
+                                       Rows="3"
+                                       ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                       NullText="Kommentar eingeben..." />
+                            </Template>
+                        </DxFormLayoutItem>
+                    </DxFormLayout>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-end">
+                    <DxButton Text="Film hinzufügen"
+                             SubmitFormOnClick="true"
+                             RenderStyle="ButtonRenderStyle.Primary"
+                             IconCssClass="bi bi-plus-circle me-2" />
+                </div>
+            </div>
+        </EditForm>
+    </DxCardBody>
+</DxCard>
 
 @code {
     private List<SenderModel>? sender;
@@ -132,13 +147,10 @@
         try
         {
             await FilmDBService.CreateGesehenAsync(neuerFilm);
-            neuerFilm = new() { GesehenAm = DateTime.Today };
-            // Optional: Navigation zur Gesehen-Seite nach erfolgreichem Speichern
-            // NavigationManager.NavigateTo("gesehen");
+            NavigationManager.NavigateTo("gesehen");
         }
         catch (Exception ex)
         {
-            // Hier könnte eine Fehlerbehandlung implementiert werden
             Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
         }
     }

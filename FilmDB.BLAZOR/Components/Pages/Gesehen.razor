@@ -8,6 +8,7 @@
 @using DevExpress.Blazor.Base
 @using DevExpress.Blazor.Grid
 @using DevExpress.Blazor.Primitives
+@using DevExpress.Blazor.Office
 @inject FilmDBService FilmDBService
 @inject NavigationManager NavigationManager
 
@@ -43,43 +44,43 @@
             }
             else
             {
-                <DxGrid Data="@filme.OrderByDescending(f => f.GesehenAm)"
-                        ShowFilterRow="true"
-                        ShowPager="true"
-                        PageSize="20"
-                        CssClass="table-hover">
-                    <Columns>
-                        <DxGridDataColumn Caption="Titel" FieldName="@nameof(GesehenModel.Titel)" />
-                        <DxGridDataColumn Caption="Gesehen am" FieldName="@nameof(GesehenModel.GesehenAm)">
-                            <CellDisplayTemplate Context="cellContext">
-                                @{
-                                    var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
-                                    @(film?.GesehenAm.ToShortDateString() ?? "-")
-                                }
-                            </CellDisplayTemplate>
-                        </DxGridDataColumn>
-                        <DxGridDataColumn Caption="Bewertung" FieldName="@nameof(GesehenModel.Bewertung)">
-                            <CellDisplayTemplate Context="cellContext">
-                                @{
-                                    var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
-                                    if (film != null)
-                                    {
-                                        @for (int i = 0; i < film.Bewertung; i++)
-                                        {
-                                            <i class="bi bi-star-fill text-warning"></i>
+                <AuthorizeView>
+                    <Authorized>
+                        <DxGrid Data="@filme.OrderByDescending(f => f.GesehenAm)"
+                               ShowFilterRow="true"
+                               ShowPager="true"
+                               PageSize="20"
+                               CssClass="table-hover">
+                            <Columns>
+                                <DxGridDataColumn Caption="Titel" FieldName="@nameof(GesehenModel.Titel)" />
+                                <DxGridDataColumn Caption="Gesehen am" FieldName="@nameof(GesehenModel.GesehenAm)">
+                                    <CellDisplayTemplate Context="cellContext">
+                                        @{
+                                            var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                            @(film?.GesehenAm.ToShortDateString() ?? "-")
                                         }
-                                        @for (int i = film.Bewertung; i < 5; i++)
-                                        {
-                                            <i class="bi bi-star text-muted"></i>
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                                <DxGridDataColumn Caption="Bewertung" FieldName="@nameof(GesehenModel.Bewertung)">
+                                    <CellDisplayTemplate Context="cellContext">
+                                        @{
+                                            var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                            if (film != null)
+                                            {
+                                                @for (int i = 0; i < film.Bewertung; i++)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                @for (int i = film.Bewertung; i < 5; i++)
+                                                {
+                                                    <i class="bi bi-star text-muted"></i>
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                            </CellDisplayTemplate>
-                        </DxGridDataColumn>
-                        <DxGridDataColumn Caption="Sender" FieldName="GesehenBei.Sendername" />
-                        <DxGridDataColumn Caption="Kommentar" FieldName="@nameof(GesehenModel.Kommentar)" />
-                        <AuthorizeView>
-                            <Authorized>
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                                <DxGridDataColumn Caption="Sender" FieldName="GesehenBei.Sendername" />
+                                <DxGridDataColumn Caption="Kommentar" FieldName="@nameof(GesehenModel.Kommentar)" />
                                 <DxGridDataColumn Caption="Aktionen" Width="120px">
                                     <CellDisplayTemplate Context="cellContext">
                                         @{
@@ -104,10 +105,49 @@
                                         }
                                     </CellDisplayTemplate>
                                 </DxGridDataColumn>
-                            </Authorized>
-                        </AuthorizeView>
-                    </Columns>
-                </DxGrid>
+                            </Columns>
+                        </DxGrid>
+                    </Authorized>
+                    <NotAuthorized>
+                        <DxGrid Data="@filme.OrderByDescending(f => f.GesehenAm)"
+                               ShowFilterRow="true"
+                               ShowPager="true"
+                               PageSize="20"
+                               CssClass="table-hover">
+                            <Columns>
+                                <DxGridDataColumn Caption="Titel" FieldName="@nameof(GesehenModel.Titel)" />
+                                <DxGridDataColumn Caption="Gesehen am" FieldName="@nameof(GesehenModel.GesehenAm)">
+                                    <CellDisplayTemplate Context="cellContext">
+                                        @{
+                                            var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                            @(film?.GesehenAm.ToShortDateString() ?? "-")
+                                        }
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                                <DxGridDataColumn Caption="Bewertung" FieldName="@nameof(GesehenModel.Bewertung)">
+                                    <CellDisplayTemplate Context="cellContext">
+                                        @{
+                                            var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                            if (film != null)
+                                            {
+                                                @for (int i = 0; i < film.Bewertung; i++)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                @for (int i = film.Bewertung; i < 5; i++)
+                                                {
+                                                    <i class="bi bi-star text-muted"></i>
+                                                }
+                                            }
+                                        }
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                                <DxGridDataColumn Caption="Sender" FieldName="GesehenBei.Sendername" />
+                                <DxGridDataColumn Caption="Kommentar" FieldName="@nameof(GesehenModel.Kommentar)" />
+                            </Columns>
+                        </DxGrid>
+                    </NotAuthorized>
+                </AuthorizeView>
             }
         </DxCardBody>
     </DxCard>

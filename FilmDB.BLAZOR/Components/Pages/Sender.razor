@@ -2,109 +2,133 @@
 @using FilmDB.BLAZOR.Models
 @using FilmDB.BLAZOR.Services
 @using Microsoft.AspNetCore.Authorization
+@using DevExpress.Blazor
 @inject FilmDBService FilmDBService
 
 @attribute [Authorize]
 
 <PageTitle>Sender verwalten</PageTitle>
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">@(editMode ? "Sender bearbeiten" : "Neuen Sender hinzufügen")</h5>
-            </div>
-            <div class="card-body">
-                <EditForm Model="@senderModel" OnValidSubmit="HandleValidSubmit">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
+<DxCard>
+    <DxCardHeader>
+        <h5 class="mb-0">@(editMode ? "Sender bearbeiten" : "Neuen Sender hinzufügen")</h5>
+    </DxCardHeader>
+    <DxCardBody>
+        <EditForm Model="@senderModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="sendername" class="form-label">Sendername</label>
-                                <InputText id="sendername" class="form-control" @bind-Value="senderModel.Sendername" placeholder="Name des Senders eingeben..." />
+            <div class="row">
+                <div class="col-md-8">
+                    <DxFormLayout>
+                        <DxFormLayoutItem Caption="Sendername" ColSpanMd="12">
+                            <Template Context="formLayoutContext">
+                                <DxTextBox @bind-Text="@senderModel.Sendername"
+                                         ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                         NullText="Name des Senders eingeben..." />
                                 <ValidationMessage For="@(() => senderModel.Sendername)" />
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end gap-2">
-                            <button type="submit" class="btn btn-primary flex-grow-1 mb-3">
-                                <i class="bi @(editMode ? "bi-check-circle" : "bi-plus-circle") me-2"></i>
-                                @(editMode ? "Änderungen speichern" : "Sender hinzufügen")
-                            </button>
-                            @if (editMode)
-                            {
-                                <button type="button" class="btn btn-outline-secondary mb-3" @onclick="CancelEdit">
-                                    <i class="bi bi-x-circle me-2"></i>Abbrechen
-                                </button>
-                            }
-                        </div>
-                    </div>
-                </EditForm>
+                            </Template>
+                        </DxFormLayoutItem>
+                    </DxFormLayout>
+                </div>
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <DxButton Text="@(editMode ? "Änderungen speichern" : "Sender hinzufügen")"
+                             IconCssClass="@(editMode ? "bi bi-check-circle" : "bi bi-plus-circle")"
+                             SubmitFormOnClick="true"
+                             RenderStyle="ButtonRenderStyle.Primary"
+                             CssClass="flex-grow-1" />
+                    @if (editMode)
+                    {
+                        <DxButton Text="Abbrechen"
+                                 IconCssClass="bi bi-x-circle"
+                                 Click="@CancelEdit"
+                                 RenderStyle="ButtonRenderStyle.Secondary"
+                                 RenderStyleMode="ButtonRenderStyleMode.Outline" />
+                    }
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+        </EditForm>
+    </DxCardBody>
+</DxCard>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">Vorhandene Sender</h5>
+<DxCard CssClass="mt-4">
+    <DxCardHeader>
+        <h5 class="mb-0">Vorhandene Sender</h5>
+    </DxCardHeader>
+    <DxCardBody>
+        @if (senderList == null)
+        {
+            <div class="text-center py-4">
+                <DxLoadingIndicator />
             </div>
-            <div class="card-body">
-                @if (senderList == null)
-                {
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Laden...</span>
-                        </div>
-                    </div>
-                }
-                else if (!senderList.Any())
-                {
-                    <div class="alert alert-info" role="alert">
-                        <i class="bi bi-info-circle me-2"></i>Keine Sender vorhanden.
-                    </div>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Name</th>
-                                    <th class="text-end">Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var s in senderList.OrderBy(s => s.Sendername))
+        }
+        else if (!senderList.Any())
+        {
+            <DxAlert IconCssClass="bi bi-info-circle">
+                Keine Sender vorhanden.
+            </DxAlert>
+        }
+        else
+        {
+            <DxGrid Data="@senderList.OrderBy(s => s.Sendername)"
+                    ShowFilterRow="true"
+                    ShowPager="true"
+                    PageSize="10"
+                    CssClass="table-hover">
+                <Columns>
+                    <DxGridDataColumn Caption="Name" FieldName="@nameof(SenderModel.Sendername)" />
+                    <DxGridDataColumn Caption="Aktionen" Width="120px">
+                        <CellDisplayTemplate Context="context">
+                            @{
+                                var sender = (context.DataItem as SenderModel);
+                                if (sender != null)
                                 {
-                                    <tr>
-                                        <td>@s.Sendername</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten" @onclick="@(e => EditSender(s))">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" title="Löschen" @onclick="@(e => DeleteSender(s))">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                                 RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                                 IconCssClass="bi bi-pencil"
+                                                 Click="@(() => EditSender(sender))"
+                                                 title="Bearbeiten"
+                                                 SizeMode="SizeMode.Small" />
+                                        <DxButton RenderStyle="ButtonRenderStyle.Danger"
+                                                 RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                                 IconCssClass="bi bi-trash"
+                                                 Click="@(() => DeleteSender(sender))"
+                                                 title="Löschen"
+                                                 SizeMode="SizeMode.Small" />
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
+                            }
+                        </CellDisplayTemplate>
+                    </DxGridDataColumn>
+                </Columns>
+            </DxGrid>
+        }
+    </DxCardBody>
+</DxCard>
+
+<DxPopup @bind-Visible="@showDeleteDialog"
+         HeaderText="Sender löschen"
+         ShowFooter="true">
+    <BodyTemplate>
+        <p>Möchten Sie diesen Sender wirklich löschen?</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <DxButton Text="Ja"
+                  RenderStyle="ButtonRenderStyle.Danger"
+                  Click="@ConfirmDelete" />
+        <DxButton Text="Nein"
+                  RenderStyle="ButtonRenderStyle.Secondary"
+                  Click="@(() => showDeleteDialog = false)" />
+    </FooterTemplate>
+</DxPopup>
 
 @code {
     private List<SenderModel>? senderList;
     private SenderModel senderModel = new();
     private bool editMode;
+    private bool showDeleteDialog;
+    private SenderModel? senderToDelete;
 
     protected override async Task OnInitializedAsync()
     {
@@ -161,20 +185,35 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
-            await LoadSenderList(); // Bei Fehler komplette Liste neu laden
+            await LoadSenderList();
         }
     }
 
-    private async Task DeleteSender(SenderModel sender)
+    private void DeleteSender(SenderModel sender)
     {
-        try
+        senderToDelete = sender;
+        showDeleteDialog = true;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (senderToDelete != null)
         {
-            await FilmDBService.DeleteSenderAsync(sender.ID);
-            await LoadSenderList();
+            try
+            {
+                await FilmDBService.DeleteSenderAsync(senderToDelete.ID);
+                if (senderList != null)
+                {
+                    senderList.Remove(senderToDelete);
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler beim Löschen: {ex.Message}");
+                await LoadSenderList();
+            }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fehler beim Löschen: {ex.Message}");
-        }
+        showDeleteDialog = false;
     }
 } 
