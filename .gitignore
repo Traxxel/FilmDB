@@ -1,8 +1,21 @@
-# Visual Studio files
+# .NET Build-Verzeichnisse
+bin/
+obj/
+
+# Visual Studio Dateien
 .vs/
 *.user
-*.userosscache
-*.sln.docstates
+*.suo
+
+# Environment-spezifische Dateien
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+*.local.json
+
+# Andere
+*.log
+node_modules/
 
 # Build results
 [Dd]ebug/
@@ -27,7 +40,6 @@ msbuild.wrn
 .idea/
 
 # User-specific files
-*.suo
 *.user
 *.userosscache
 *.sln.docstates
@@ -48,6 +60,5 @@ artifacts/
 .tye/
 
 # Misc
-*.log
 *.tmp
 *.swp 
