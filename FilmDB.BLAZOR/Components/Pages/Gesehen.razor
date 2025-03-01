@@ -1,0 +1,136 @@
+@page "/gesehen"
+@using FilmDB.BLAZOR.Models
+@using FilmDB.BLAZOR.Services
+@inject FilmDBService FilmDBService
+
+<PageTitle>Gesehene Filme</PageTitle>
+
+<h1>Gesehene Filme</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Neuen Film hinzufügen
+            </div>
+            <div class="card-body">
+                <EditForm Model="@neuerFilm" OnValidSubmit="@HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="titel" class="form-label">Titel</label>
+                        <InputText id="titel" class="form-control" @bind-Value="neuerFilm.Titel" />
+                        <ValidationMessage For="@(() => neuerFilm.Titel)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="gesehenAm" class="form-label">Gesehen am</label>
+                        <InputDate id="gesehenAm" class="form-control" @bind-Value="neuerFilm.GesehenAm" />
+                        <ValidationMessage For="@(() => neuerFilm.GesehenAm)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bewertung" class="form-label">Bewertung (1-5)</label>
+                        <InputNumber id="bewertung" class="form-control" @bind-Value="neuerFilm.Bewertung" />
+                        <ValidationMessage For="@(() => neuerFilm.Bewertung)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kommentar" class="form-label">Kommentar</label>
+                        <InputTextArea id="kommentar" class="form-control" @bind-Value="neuerFilm.Kommentar" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="sender" class="form-label">Sender</label>
+                        <InputSelect id="sender" class="form-control" @bind-Value="neuerFilm.GesehenBeiID">
+                            <option value="">-- Sender auswählen --</option>
+                            @if (sender != null)
+                            {
+                                @foreach (var s in sender)
+                                {
+                                    <option value="@s.ID">@s.Sendername</option>
+                                }
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => neuerFilm.GesehenBeiID)" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h2>Filme-Liste</h2>
+        @if (filme == null)
+        {
+            <p>Laden...</p>
+        }
+        else if (!filme.Any())
+        {
+            <p>Keine Filme vorhanden.</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Titel</th>
+                        <th>Gesehen am</th>
+                        <th>Bewertung</th>
+                        <th>Sender</th>
+                        <th>Kommentar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var film in filme)
+                    {
+                        <tr>
+                            <td>@film.Titel</td>
+                            <td>@film.GesehenAm.ToShortDateString()</td>
+                            <td>@film.Bewertung</td>
+                            <td>@(film.GesehenBei?.Sendername ?? "-")</td>
+                            <td>@(film.Kommentar ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private List<GesehenModel>? filme;
+    private List<SenderModel>? sender;
+    private GesehenModel neuerFilm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        filme = await FilmDBService.GetGesehenAsync();
+        sender = await FilmDBService.GetSenderAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await FilmDBService.CreateGesehenAsync(neuerFilm);
+            neuerFilm = new();
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            // Hier könnte eine Fehlerbehandlung implementiert werden
+            Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
+        }
+    }
+} 

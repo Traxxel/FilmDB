@@ -1,0 +1,96 @@
+@page "/sender"
+@using FilmDB.BLAZOR.Models
+@using FilmDB.BLAZOR.Services
+@inject FilmDBService FilmDBService
+
+<PageTitle>Sender verwalten</PageTitle>
+
+<h1>Sender verwalten</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Neuen Sender hinzufügen
+            </div>
+            <div class="card-body">
+                <EditForm Model="@neuerSender" OnValidSubmit="@HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="sendername" class="form-label">Sendername</label>
+                        <InputText id="sendername" class="form-control" @bind-Value="neuerSender.Sendername" />
+                        <ValidationMessage For="@(() => neuerSender.Sendername)" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h2>Vorhandene Sender</h2>
+        @if (sender == null)
+        {
+            <p>Laden...</p>
+        }
+        else if (!sender.Any())
+        {
+            <p>Keine Sender vorhanden.</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in sender)
+                    {
+                        <tr>
+                            <td>@s.ID</td>
+                            <td>@s.Sendername</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private List<SenderModel>? sender;
+    private SenderModel neuerSender = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSender();
+    }
+
+    private async Task LoadSender()
+    {
+        sender = await FilmDBService.GetSenderAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await FilmDBService.CreateSenderAsync(neuerSender);
+            neuerSender = new();
+            await LoadSender();
+        }
+        catch (Exception ex)
+        {
+            // Hier könnte eine Fehlerbehandlung implementiert werden
+            Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
+        }
+    }
+} 

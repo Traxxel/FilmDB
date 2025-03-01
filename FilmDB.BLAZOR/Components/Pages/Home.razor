@@ -1,0 +1,46 @@
+﻿@page "/"
+
+<PageTitle>FilmDB - Startseite</PageTitle>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">Willkommen bei FilmDB</h1>
+            <p class="lead">Ihre persönliche Filmdatenbank</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-film text-primary"></i>
+                        Filme durchsuchen
+                    </h5>
+                    <p class="card-text">Durchsuchen Sie unsere Sammlung von Filmen und finden Sie Ihre Favoriten.</p>
+                    <a href="/gesehen" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        Zur Filmübersicht
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-plus-circle text-success"></i>
+                        Film hinzufügen
+                    </h5>
+                    <p class="card-text">Erweitern Sie die Datenbank um neue Filme und teilen Sie Ihre Entdeckungen.</p>
+                    <a href="/film/neu" class="btn btn-success">
+                        <i class="bi bi-plus"></i>
+                        Neuen Film hinzufügen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

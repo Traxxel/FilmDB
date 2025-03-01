@@ -1,4 +1,4 @@
-@FilmDB.API_HostAddress = http://localhost:5092
+@FilmDB.API_HostAddress = http://localhost:5002
 
 GET {{FilmDB.API_HostAddress}}/weatherforecast/
 Accept: application/json

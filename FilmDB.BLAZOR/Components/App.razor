@@ -1,0 +1,15 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using FilmDB.BLAZOR.Components.Layout
+
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Nicht gefunden</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Entschuldigung, diese Seite wurde nicht gefunden.</p>
+        </LayoutView>
+    </NotFound>
+</Router> 

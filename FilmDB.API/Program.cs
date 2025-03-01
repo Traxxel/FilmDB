@@ -3,6 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS für Blazor-Client erlauben
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorClient",
+        policy => policy
+            .WithOrigins("http://localhost:5002")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
@@ -17,6 +27,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// CORS aktivieren
+app.UseCors("BlazorClient");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -24,8 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+// HTTPS-Umleitung entfernt
 app.UseAuthorization();
 
 app.MapControllers();

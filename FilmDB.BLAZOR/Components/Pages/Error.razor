@@ -1,0 +1,29 @@
+﻿@page "/error"
+
+<PageTitle>Fehler</PageTitle>
+
+<div class="container mt-4">
+    <h1 class="text-danger">Fehler</h1>
+    <h2 class="text-danger">Ein Fehler ist aufgetreten.</h2>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <p>
+            <strong>Details:</strong> <code>@ErrorMessage</code>
+        </p>
+    }
+
+    <h3>Was nun?</h3>
+    <p>
+        <a href="" class="btn btn-primary">Zur Startseite</a>
+    </p>
+</div>
+
+@code {
+    private string? ErrorMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ErrorMessage = "Ein unerwarteter Fehler ist aufgetreten.";
+    }
+}
