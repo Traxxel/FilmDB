@@ -67,4 +67,7 @@ artifacts/
 
 # Misc
 *.tmp
-*.swp 
+*.swp
+
+# DevExpress license key
+**/appsettings.Development.json 

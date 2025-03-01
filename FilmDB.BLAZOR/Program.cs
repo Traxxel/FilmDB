@@ -4,12 +4,19 @@ using FilmDB.BLAZOR;
 using FilmDB.BLAZOR.Components;
 using FilmDB.BLAZOR.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using DevExpress.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+// DevExpress Blazor Services
+builder.Services.AddDevExpressBlazor(options => {
+    options.BootstrapVersion = BootstrapVersion.v5;
+    options.SizeMode = SizeMode.Medium;
+});
 
 // Konfiguriere den HTTP-Client für die API mit Auth
 builder.Services.AddHttpClient("FilmDB.API", 

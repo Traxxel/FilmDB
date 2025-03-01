@@ -3,102 +3,136 @@
 @using FilmDB.BLAZOR.Services
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using DevExpress.Blazor
+@using DevExpress.Blazor.Internal
+@using DevExpress.Blazor.Base
+@using DevExpress.Blazor.Grid
+@using DevExpress.Blazor.Primitives
 @inject FilmDBService FilmDBService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Gesehene Filme</PageTitle>
 
 <CascadingAuthenticationState>
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Gesehene Filme &amp; Serien</h5>
-                    <AuthorizeView>
-                        <Authorized>
-                            <button class="btn btn-primary" @onclick="AddFilm">
-                                <i class="bi bi-plus-circle me-2"></i>Neuen Film erfassen
-                            </button>
-                        </Authorized>
-                    </AuthorizeView>
-                </div>
-                <div class="card-body">
-                    @if (filme == null)
-                    {
-                        <div class="text-center py-4">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Laden...</span>
-                            </div>
-                        </div>
-                    }
-                    else if (!filme.Any())
-                    {
-                        <div class="alert alert-info" role="alert">
-                            <i class="bi bi-info-circle me-2"></i>Keine Filme vorhanden.
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Titel</th>
-                                        <th>Gesehen am</th>
-                                        <th>Bewertung</th>
-                                        <th>Sender</th>
-                                        <th>Kommentar</th>
-                                        <AuthorizeView>
-                                            <Authorized>
-                                                <th class="text-end">Aktionen</th>
-                                            </Authorized>
-                                        </AuthorizeView>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var film in filme.OrderByDescending(f => f.GesehenAm))
-                                    {
-                                        <tr>
-                                            <td>@film.Titel</td>
-                                            <td>@film.GesehenAm.ToShortDateString()</td>
-                                            <td>
-                                                @for (int i = 0; i < film.Bewertung; i++)
-                                                {
-                                                    <i class="bi bi-star-fill text-warning"></i>
-                                                }
-                                                @for (int i = film.Bewertung; i < 5; i++)
-                                                {
-                                                    <i class="bi bi-star text-muted"></i>
-                                                }
-                                            </td>
-                                            <td>@(film.GesehenBei?.Sendername ?? "-")</td>
-                                            <td>@(film.Kommentar ?? "-")</td>
-                                            <AuthorizeView>
-                                                <Authorized>
-                                                    <td class="text-end">
-                                                        <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten" @onclick="@(() => EditFilm(film))">
-                                                            <i class="bi bi-pencil"></i>
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-danger" title="Löschen" @onclick="@(() => DeleteFilm(film))">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </td>
-                                                </Authorized>
-                                            </AuthorizeView>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                </div>
+    <DxCard>
+        <DxCardHeader>
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Gesehene Filme &amp; Serien</h5>
+                <AuthorizeView>
+                    <Authorized>
+                        <DxButton Text="Neuen Film erfassen"
+                                 IconCssClass="bi bi-plus-circle"
+                                 Click="@AddFilm"
+                                 RenderStyle="ButtonRenderStyle.Primary" />
+                    </Authorized>
+                </AuthorizeView>
             </div>
-        </div>
-    </div>
+        </DxCardHeader>
+        <DxCardBody>
+            @if (filme == null)
+            {
+                <div class="text-center py-4">
+                    <DxProgressBar />
+                </div>
+            }
+            else if (!filme.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Keine Filme vorhanden.
+                </div>
+            }
+            else
+            {
+                <DxGrid Data="@filme.OrderByDescending(f => f.GesehenAm)"
+                        ShowFilterRow="true"
+                        ShowPager="true"
+                        PageSize="20"
+                        CssClass="table-hover">
+                    <Columns>
+                        <DxGridDataColumn Caption="Titel" FieldName="@nameof(GesehenModel.Titel)" />
+                        <DxGridDataColumn Caption="Gesehen am" FieldName="@nameof(GesehenModel.GesehenAm)">
+                            <CellDisplayTemplate Context="cellContext">
+                                @{
+                                    var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                    @(film?.GesehenAm.ToShortDateString() ?? "-")
+                                }
+                            </CellDisplayTemplate>
+                        </DxGridDataColumn>
+                        <DxGridDataColumn Caption="Bewertung" FieldName="@nameof(GesehenModel.Bewertung)">
+                            <CellDisplayTemplate Context="cellContext">
+                                @{
+                                    var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                    if (film != null)
+                                    {
+                                        @for (int i = 0; i < film.Bewertung; i++)
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        @for (int i = film.Bewertung; i < 5; i++)
+                                        {
+                                            <i class="bi bi-star text-muted"></i>
+                                        }
+                                    }
+                                }
+                            </CellDisplayTemplate>
+                        </DxGridDataColumn>
+                        <DxGridDataColumn Caption="Sender" FieldName="GesehenBei.Sendername" />
+                        <DxGridDataColumn Caption="Kommentar" FieldName="@nameof(GesehenModel.Kommentar)" />
+                        <AuthorizeView>
+                            <Authorized>
+                                <DxGridDataColumn Caption="Aktionen" Width="120px">
+                                    <CellDisplayTemplate Context="cellContext">
+                                        @{
+                                            var film = ((cellContext as GridDataColumnCellDisplayTemplateContext)?.DataItem as GesehenModel);
+                                            if (film != null)
+                                            {
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                                             RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                                             IconCssClass="bi bi-pencil"
+                                                             Click="@(() => EditFilm(film))"
+                                                             title="Bearbeiten"
+                                                             SizeMode="SizeMode.Small" />
+                                                    <DxButton RenderStyle="ButtonRenderStyle.Danger"
+                                                             RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                                             IconCssClass="bi bi-trash"
+                                                             Click="@(() => DeleteFilm(film))"
+                                                             title="Löschen"
+                                                             SizeMode="SizeMode.Small" />
+                                                </div>
+                                            }
+                                        }
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                            </Authorized>
+                        </AuthorizeView>
+                    </Columns>
+                </DxGrid>
+            }
+        </DxCardBody>
+    </DxCard>
 </CascadingAuthenticationState>
+
+<DxPopup @bind-Visible="@showDeleteDialog"
+         HeaderText="Film löschen"
+         ShowFooter="true">
+    <BodyTemplate>
+        <p>Möchten Sie diesen Film wirklich löschen?</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <DxButton Text="Ja"
+                  RenderStyle="ButtonRenderStyle.Danger"
+                  Click="@ConfirmDelete" />
+        <DxButton Text="Nein"
+                  RenderStyle="ButtonRenderStyle.Secondary"
+                  Click="@(() => showDeleteDialog = false)" />
+    </FooterTemplate>
+</DxPopup>
 
 @code {
     private List<GesehenModel>? filme;
+    private bool showDeleteDialog;
+    private GesehenModel? filmToDelete;
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,33 +146,39 @@
 
     private void EditFilm(GesehenModel film)
     {
-        // TODO: Implementiere die Bearbeiten-Funktion
-        // Für jetzt navigieren wir zur Bearbeiten-Seite
         NavigationManager.NavigateTo($"film-bearbeiten/{film.ID}");
     }
 
-    private async Task DeleteFilm(GesehenModel film)
+    private void DeleteFilm(GesehenModel film)
     {
-        try
+        filmToDelete = film;
+        showDeleteDialog = true;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (filmToDelete != null)
         {
-            await FilmDBService.DeleteGesehenAsync(film.ID);
-            if (filme != null)
+            try
             {
-                filme.Remove(film);
-                StateHasChanged();
+                await FilmDBService.DeleteGesehenAsync(filmToDelete.ID);
+                if (filme != null)
+                {
+                    filme.Remove(filmToDelete);
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler beim Löschen: {ex.Message}");
+                await LoadData();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fehler beim Löschen: {ex.Message}");
-            await LoadData(); // Bei Fehler komplette Liste neu laden
-        }
+        showDeleteDialog = false;
     }
 
     private void AddFilm()
     {
-        // TODO: Implementiere die AddFilm-Funktion
-        // Für jetzt navigieren wir zur AddFilm-Seite
         NavigationManager.NavigateTo("film-hinzufuegen");
     }
 } 
