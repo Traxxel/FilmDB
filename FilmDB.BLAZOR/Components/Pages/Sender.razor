@@ -8,23 +8,30 @@
 <h1>Sender verwalten</h1>
 
 <div class="row mb-4">
-    <div class="col-md-4">
+    <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                Neuen Sender hinzufügen
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Neuen Sender hinzufügen</h5>
             </div>
             <div class="card-body">
                 <EditForm Model="@neuerSender" OnValidSubmit="@HandleValidSubmit">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
-                    <div class="mb-3">
-                        <label for="sendername" class="form-label">Sendername</label>
-                        <InputText id="sendername" class="form-control" @bind-Value="neuerSender.Sendername" />
-                        <ValidationMessage For="@(() => neuerSender.Sendername)" />
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="sendername" class="form-label">Sendername</label>
+                                <InputText id="sendername" class="form-control" @bind-Value="neuerSender.Sendername" placeholder="Name des Senders eingeben..." />
+                                <ValidationMessage For="@(() => neuerSender.Sendername)" />
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100 mb-3">
+                                <i class="fas fa-plus-circle me-2"></i>Sender hinzufügen
+                            </button>
+                        </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Hinzufügen</button>
                 </EditForm>
             </div>
         </div>
@@ -32,36 +39,59 @@
 </div>
 
 <div class="row">
-    <div class="col">
-        <h2>Vorhandene Sender</h2>
-        @if (sender == null)
-        {
-            <p>Laden...</p>
-        }
-        else if (!sender.Any())
-        {
-            <p>Keine Sender vorhanden.</p>
-        }
-        else
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var s in sender)
-                    {
-                        <tr>
-                            <td>@s.ID</td>
-                            <td>@s.Sendername</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Vorhandene Sender</h5>
+            </div>
+            <div class="card-body">
+                @if (sender == null)
+                {
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Laden...</span>
+                        </div>
+                    </div>
+                }
+                else if (!sender.Any())
+                {
+                    <div class="alert alert-info" role="alert">
+                        Keine Sender vorhanden.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th class="text-end">Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in sender.OrderBy(s => s.Sendername))
+                                {
+                                    <tr>
+                                        <td>@s.ID</td>
+                                        <td>@s.Sendername</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-2" title="Bearbeiten">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Löschen">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
