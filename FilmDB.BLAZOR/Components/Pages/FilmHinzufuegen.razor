@@ -1,7 +1,11 @@
 @page "/film-hinzufuegen"
 @using FilmDB.BLAZOR.Models
 @using FilmDB.BLAZOR.Services
+@using Microsoft.AspNetCore.Authorization
 @inject FilmDBService FilmDBService
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize]
 
 <PageTitle>Film hinzufügen</PageTitle>
 

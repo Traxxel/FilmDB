@@ -1,0 +1,48 @@
+@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Anmeldung läuft...</span>
+                </div>
+                <p>Sie werden angemeldet...</p>
+            </div>
+        </div>
+    </LoggingIn>
+    <CompletingLoggingIn>
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Anmeldung wird abgeschlossen...</span>
+                </div>
+                <p>Ihre Anmeldung wird abgeschlossen...</p>
+            </div>
+        </div>
+    </CompletingLoggingIn>
+    <LogInFailed>
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Anmeldung fehlgeschlagen</h4>
+            <p>Bei der Anmeldung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</p>
+            <hr>
+            <a href="" class="btn btn-primary">Zur Startseite</a>
+        </div>
+    </LogInFailed>
+    <LogOut>
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Abmeldung läuft...</span>
+                </div>
+                <p>Sie werden abgemeldet...</p>
+            </div>
+        </div>
+    </LogOut>
+</RemoteAuthenticatorView>
+
+@code {
+    [Parameter]
+    public string? Action { get; set; }
+} 

@@ -1,7 +1,10 @@
 @page "/sender"
 @using FilmDB.BLAZOR.Models
 @using FilmDB.BLAZOR.Services
+@using Microsoft.AspNetCore.Authorization
 @inject FilmDBService FilmDBService
+
+@attribute [Authorize]
 
 <PageTitle>Sender verwalten</PageTitle>
 

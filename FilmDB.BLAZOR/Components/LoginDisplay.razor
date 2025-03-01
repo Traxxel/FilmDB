@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<AuthorizeView>
+    <Authorized>
+        <a href="authentication/profile">Hallo, @context.User.Identity?.Name!</a>
+        <button class="nav-link btn btn-link" @onclick="BeginSignOut">Abmelden</button>
+    </Authorized>
+    <NotAuthorized>
+        <a href="authentication/login">Anmelden</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@inject NavigationManager Navigation
+
+@code {
+    private void BeginSignOut()
+    {
+        Navigation.NavigateToLogout("authentication/logout");
+    }
+} 

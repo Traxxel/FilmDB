@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using FilmDB.DAL;
 using FilmDB.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FilmDB.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class GesehenController : ControllerBase

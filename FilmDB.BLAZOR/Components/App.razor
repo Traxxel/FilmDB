@@ -1,15 +1,39 @@
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
 @using FilmDB.BLAZOR.Components.Layout
 
-<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Nicht gefunden</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Entschuldigung, diese Seite wurde nicht gefunden.</p>
-        </LayoutView>
-    </NotFound>
-</Router> 
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+                <NotAuthorized>
+                    <p>Sie sind nicht berechtigt, diese Seite aufzurufen.</p>
+                    <p>Bitte <a href="authentication/login">melden Sie sich an</a>.</p>
+                </NotAuthorized>
+                <Authorizing>
+                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="visually-hidden">Autorisierung wird geprüft...</span>
+                            </div>
+                            <p>Autorisierung wird geprüft...</p>
+                        </div>
+                    </div>
+                </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Nicht gefunden</PageTitle>
+            <LayoutView Layout="@typeof(Layout.MainLayout)">
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">404 - Seite nicht gefunden</h4>
+                    <p>Die angeforderte Seite konnte nicht gefunden werden.</p>
+                    <hr>
+                    <a href="" class="btn btn-primary">Zur Startseite</a>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState> 
