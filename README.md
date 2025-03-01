@@ -6,17 +6,20 @@ Eine Blazor WebAssembly Anwendung zur Verwaltung von Filmen und TV-Sendern. Die 
 
 - Verwaltung von Filmen (Hinzufügen, Bearbeiten, Löschen)
 - Verwaltung von TV-Sendern
-- Übersichtliche Darstellung der Filmdatenbank
-- Suchfunktion für Filme
-- Filterung nach verschiedenen Kriterien
+- Übersichtliche Darstellung der Filmdatenbank mit DevExpress Grid
+- Suchfunktion und Filterung für Filme
+- Bewertungssystem mit Sternen (1-5)
+- Azure AD Authentifizierung
+  - Öffentliche Ansicht der Filmliste für alle Besucher
+  - Verwaltungsfunktionen nur für authentifizierte Benutzer
 
 ## Projektstruktur
 
 ```
 FilmDB/
-├── FilmDB.API/           # Backend Web API
-├── FilmDB.Client/        # Blazor WebAssembly Frontend
-├── FilmDB.Shared/        # Gemeinsam genutzte Modelle und Interfaces
+├── FilmDB.API/           # Backend Web API mit Azure AD Auth
+├── FilmDB.BLAZOR/        # Blazor WebAssembly Frontend
+├── FilmDB.DAL/           # Data Access Layer mit Entity Framework
 └── FilmDB.Tests/         # Unit Tests
 ```
 
@@ -25,8 +28,11 @@ FilmDB/
 - .NET 8
 - Blazor WebAssembly
 - Entity Framework Core
-- SQL Server
+- PostgreSQL
+- Azure AD B2C
+- DevExpress Blazor Components
 - Bootstrap 5
+- Bootstrap Icons
 
 ## Installation
 
@@ -39,20 +45,69 @@ FilmDB/
    ```bash
    cd FilmDB
    ```
-4. Stelle die Datenbankverbindung in der `appsettings.json` ein
+4. Konfiguriere die Anwendung:
+   - Erstelle `appsettings.Development.json` in FilmDB.API/ und FilmDB.BLAZOR/
+   - Füge die Azure AD Konfiguration hinzu
+   - Stelle die Datenbankverbindung ein
 5. Führe die Datenbankmigrationen aus:
    ```bash
    dotnet ef database update
    ```
 6. Starte die Anwendung:
    ```bash
-   dotnet run --project FilmDB.API
+   # API starten
+   cd FilmDB.API
+   dotnet run
+
+   # In einem neuen Terminal: Frontend starten
+   cd FilmDB.BLAZOR
+   dotnet run
    ```
 
 ## Entwicklung
 
-- Backend API läuft standardmäßig auf `https://localhost:7000`
-- Frontend läuft standardmäßig auf `https://localhost:7001`
+- Backend API läuft standardmäßig auf `http://localhost:5000`
+- Frontend läuft standardmäßig auf `http://localhost:5002`
+
+### Konfiguration
+
+Die Anwendung benötigt folgende Konfigurationen:
+
+#### API (appsettings.Development.json):
+```json
+{
+  "AzureAd": {
+    "Instance": "https://login.microsoftonline.com/",
+    "Domain": "ihre-domain.onmicrosoft.com",
+    "TenantId": "ihr-tenant-id",
+    "ClientId": "ihre-client-id",
+    "Audience": "api://ihre-client-id"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=FilmDB;Username=postgres;Password=ihr-passwort"
+  }
+}
+```
+
+#### Frontend (appsettings.Development.json):
+```json
+{
+  "AzureAd": {
+    "Authority": "https://login.microsoftonline.com/ihr-tenant-id",
+    "ClientId": "ihre-client-id",
+    "ValidateAuthority": true,
+    "DefaultScopes": [
+      "openid",
+      "profile",
+      "offline_access",
+      "api://ihre-client-id/API.Access"
+    ]
+  },
+  "DevExpress": {
+    "LicenseKey": "ihre-devexpress-lizenz"
+  }
+}
+```
 
 ## Beitragen
 
